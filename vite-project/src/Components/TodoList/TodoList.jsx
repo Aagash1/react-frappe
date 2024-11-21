@@ -1,28 +1,26 @@
 import { useState } from "react"
 
 function TodoList({data,remove,update}) {
-    const [visible,setVisible]=useState(false);
+    const [visible,setVisible]=useState(null);
     const [task,setTask]=useState("");
-    const [index,setIndex]=useState(null);
     return (
       <>
         <ul>
             {data.map(
             (elem,ind)=>
                 <li key={ind}>
-                    <span>{elem}</span>
-                    <button style={{marginLeft:"10px"}} onClick={()=>{remove(ind);setVisible(false);setIndex(null);setTask("");}}>x</button>
-                    <button style={{marginLeft:"10px"}} onClick={()=>{setVisible(true);setIndex(ind);setTask(elem);}}>Update</button> 
+                    <span>{elem.task}</span>
+                    <button style={{marginLeft:"10px"}} onClick={()=>{remove(elem.name);setVisible(null);setTask("");}}>x</button>
+                    <button style={{marginLeft:"10px"}} onClick={()=>{setVisible(elem.name);setTask(elem.task);}}>Update</button> 
                     {
-                        visible&&ind==index&&(
+                        (visible==elem.name)&&(
                             <>
                                 <input value={task} onChange={(e)=>setTask(e.target.value)}></input>   
                                 <button onClick={()=>{
                                     if(task!==""){
-                                        update(ind,task);
+                                        update(elem.name,elem.task,task);
                                         setVisible(false);
                                         setTask("");
-                                        setIndex(null);
                                     }
                                 }}>Save</button>
                             </>
