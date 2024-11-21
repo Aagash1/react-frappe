@@ -1,14 +1,21 @@
 import { useState,useEffect } from "react";
 import {getTasks,createTask,deleteTask,updateTask} from "../../Api/frappeApi.js"
+import TodoList from "../TodoList/TodoList";
 
-import TodoList from "../TodoList/TodoList"
 function Todo() {
   const [task,setTask]=useState("");
   const [tasks,setTasks]=useState([]);
+  const [error, setError] = useState("");
+
   useEffect(()=>{
     async function fetchData () {
-      const data=await getTasks();
-      setTasks(data);
+      try{
+        const data=await getTasks();
+        setTasks(data);
+      }
+      catch(error){
+        setError("Failed to load tasks.");
+      }
     }
     fetchData();
   },[]);
@@ -20,25 +27,41 @@ function Todo() {
   async function handleSubmit(e){
    e.preventDefault();
    if(task!=""){
-    const newTask= await createTask(task);
-    setTasks((prev)=>[...prev,newTask]);
-    setTask("");
+    try{
+      const newTask= await createTask(task);
+      setTasks((prev)=>[...prev,newTask]);
+      setTask("");
+    }
+    catch(error){
+      setError("Failed to add task.");
+    }
    }
-}
-async function handleRemoveTask(elem){
-  await deleteTask(elem);
-  setTasks((prev)=>prev.filter((e)=>e.name!=elem));
-}
+  }
+  async function handleRemoveTask(name){
+    try{
+      await deleteTask(name);
+      setTasks((prev) => prev.filter((task) => task.name !== name));
+    }
+    catch(err){
+      setError("Failed to delete task.");
+    }
+  }
 
 async function handleTaskChange(name,oldValue,value){
-  await updateTask(name,oldValue,value);
-  setTasks((prev)=>prev.map((e)=>{
-     if(e.name==name)return {name,task:value};
-     return e; 
-  }))
+  try{
+    await updateTask(name,oldValue,value);
+    setTasks((prev)=>prev.map((e)=>{
+      if(e.name==name)return {name,task:value};
+      return e; 
+    }))
+  }
+  catch(err){
+    setError("Failed to update task.");
+  }
 }
   return (
     <>
+       {error && <div style={{ color: "red" }}>{error}</div>}
       <form onSubmit={handleSubmit}>
          <input placeholder="Add Task" value={task} onChange={handleChange}></input>
          <button> Add</button>
