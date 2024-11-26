@@ -5,7 +5,7 @@ import { FrappeProvider } from "frappe-react-sdk";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <FrappeProvider url="http://demo.localhost:8000">
+    <FrappeProvider url="http://demo.localhost:8000" enableSocket={false}>
       <App />
     </FrappeProvider>
   </StrictMode>,
